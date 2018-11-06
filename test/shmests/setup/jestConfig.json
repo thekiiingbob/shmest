@@ -1,0 +1,5 @@
+{
+  "verbose": true,
+  "setupFiles": ["../../../index.js"],
+  "workers": 4
+}

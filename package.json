@@ -7,7 +7,11 @@
     "shmest": "./bin/shmest.js"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:unit": "npm run test test/unit",
+    "test:int": "npm run test test/integration",
+    "test:perf": "node test/performance/testPerformance.js",
+    "test:all": "npm run test test/unit test/integration"
   },
   "author": "",
   "license": "ISC",
@@ -30,6 +34,9 @@
     "prettier": "^1.14.3"
   },
   "jest": {
-    "verbose": true
+    "verbose": false,
+    "setupFiles": [
+      "./index.js"
+    ]
   }
 }

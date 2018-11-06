@@ -1,10 +1,14 @@
-require("../index.js");
-
+const shmestModule = require("../../src/shmest.js");
+let shmest;
 let jTest, jDescribe;
+
 beforeEach(() => {
+  shmest = new shmestModule();
+
   // store the original Jest functions to reset later
   jTest = test;
   jDescribe = describe;
+
   global.test = (name, testFn) => {
     const result = testFn();
     return { name, result };
@@ -35,6 +39,17 @@ beforeEach(() => {
 afterEach(() => {
   global.test = jTest;
   global.describe = jDescribe;
+});
+
+describe("shmest.addCaseReporter", () => {
+  test("can add case reporter to shmest", () => {
+    shmest.addCaseReporter(() => {
+      return "foo";
+    });
+
+    expect(typeof shmest.caseReporter).toBe("function");
+    expect(shmest.caseReporter()).toBe("foo");
+  });
 });
 
 describe("shmest.test", () => {

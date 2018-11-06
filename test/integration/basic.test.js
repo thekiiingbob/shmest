@@ -1,18 +1,7 @@
-const execa = require("execa");
-
-async function runShmestFile(filePath) {
-  return await execa(
-    "./bin/shmest.js",
-    [
-      filePath,
-      "--setupTestFrameworkScriptFile=./test/integration/shmests/setup/jestSetup.js"
-    ],
-    { reject: false }
-  );
-}
+const runShmestFile = require("../utils/runShmestFile.js");
 
 test("all passing", async () => {
-  const result = await runShmestFile("./shmests/allPassing.test.js");
+  const result = await runShmestFile("allPassing.test.js");
 
   expect(result.stderr).toContain("✓ pass 1");
   expect(result.stderr).toContain("✓ pass 2");
@@ -23,7 +12,7 @@ test("all passing", async () => {
 });
 
 test("all failing", async () => {
-  const result = await runShmestFile("./shmests/allFailing.test.js");
+  const result = await runShmestFile("allFailing.test.js");
 
   expect(result.stderr).toContain("✕ fail 1");
   expect(result.stderr).toContain("✕ fail 2");
@@ -33,8 +22,19 @@ test("all failing", async () => {
   expect(result.stderr).toContain("Tests:       4 failed, 4 total");
 });
 
+test("half pass/fail", async () => {
+  const result = await runShmestFile("halfPassFail.test.js");
+
+  expect(result.stderr).toContain("✓ pass 1");
+  expect(result.stderr).toContain("✓ pass 2");
+  expect(result.stderr).toContain("✕ fail 3");
+  expect(result.stderr).toContain("✕ fail 4");
+  expect(result.stderr).toContain("Test Suites: 1 failed, 1 total");
+  expect(result.stderr).toContain("Tests:       2 failed, 2 passed, 4 total");
+});
+
 test("run tests in a folder", async () => {
-  const result = await runShmestFile("./shmests/exampleFolder");
+  const result = await runShmestFile("exampleFolder");
 
   expect(result.stderr).toContain("file 1 in folder");
   expect(result.stderr).toContain("✓ test 1");

@@ -8,14 +8,7 @@ let shouldAddMessage;
 // being, making Jasmine essentially skip all tests after the first failure.
 // https://github.com/jasmine/jasmine/issues/414
 // https://github.com/juliemr/minijasminenode/issues/20
-export function init(
-  opts = {
-    tag: null,
-    addMessage: false,
-    includeError: false,
-    includeStack: false
-  }
-) {
+export function init(opts) {
   refs = getSpecReferences();
   shouldAddMessage = opts.addMessage;
   const tagRegex = new RegExp(opts.tag);
@@ -25,37 +18,7 @@ export function init(
       if (opts.name === result.description) {
         console.log("RESULT DONE", result.description, result.status);
         if (result.status === "failed") {
-          if (opts.addMessage) {
-            failedExpectations = result.failedExpectations.map(failure => {
-              failure.message = `Marked pending because of error in "${
-                result.fullName
-              }"`;
-
-              if (opts.includeError) {
-                failure.error = failure.message + `:\n\n${failure.error}`;
-              } else {
-                failure.error = failure.message;
-              }
-
-              if (opts.includeStack) {
-                failure.stack = `Marked pending because of error in "${
-                  result.fullName
-                }":\n\n${failure.stack}`;
-              } else {
-                failure.stack = failure.message;
-              }
-
-              return failure;
-            });
-          }
-
-          // if (opts.tag && tagRegex.test(result.description)) {
-          //   disableSpecs(refs);
-          // }
-
-          // if (!opts.tag) disableSpecs(refs);
-
-          if (opts.name === result.description) disableSpecs(refs);
+          disableSpecs(refs);
         }
       }
     }
