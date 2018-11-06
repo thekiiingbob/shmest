@@ -60,3 +60,15 @@ shmest.test(
 ### Dry Run
 
 If you want to get the output of your tests without actually running your tests, simply set the environment variable `SHMEST_DRY_RUN` to `true` before you run your tests. Any targeted tests will "run", but their actual test code will be ommitted. This can be useful for generating reports of what tests exist.
+
+### Test Case Reporter
+
+TODO
+
+### Options
+
+#### name
+
+#### important
+
+#### caseId
