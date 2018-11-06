@@ -37,10 +37,10 @@ TODO
 `shmest.test` can use the syntax you familiar with such as:
 
 ```javascript
-shmest.test("this is my sweet test", () =. {
+shmest.test("this is my sweet test", () => {
   // test stuff
-  expect(things).toBe(correct) // note you can use normal expectations just fine!
-})
+  expect(things).toBe(correct); // note you can use normal expectations just fine!
+});
 ```
 
 `shmest.test.skip` and `shmest.test.only` work as well.
@@ -48,8 +48,13 @@ shmest.test("this is my sweet test", () =. {
 Optionally, you can use an object of some options for the first argument instead to get some more fine grain controls around things.
 
 ```javascript
-shmest.test(
-  { name: "this is my sweet test", important: true, caseId: "TC#1234" },
+shmest.test.skip(
+  {
+    name: "this is my sweet test",
+    important: true,
+    caseId: "TC#1234",
+    skipMessage: "blocked by BUG-123"
+  },
   () => {
     // test stuff
     expect(things).toBe(correct);
