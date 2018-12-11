@@ -1,6 +1,6 @@
 {
   "name": "shmest",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A wrapper around Jest for some additional functionality",
   "main": "index.js",
   "bin": {
