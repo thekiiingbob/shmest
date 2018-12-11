@@ -4,10 +4,9 @@ async function runShmestFile(fileName, env = {}) {
   return await execa(
     "./bin/shmest.js",
     [
-      // "--config=test/integration/shmests/setup/jestConfig.json",
       `../shmests/${fileName}`,
       "--setupTestFrameworkScriptFile=./test/shmests/setup/jestSetup.js",
-      "--verbose"
+      "--verbose=true"
     ],
     { reject: false, env: env }
   ).catch(e => {

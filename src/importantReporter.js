@@ -8,7 +8,7 @@ let shouldAddMessage;
 // being, making Jasmine essentially skip all tests after the first failure.
 // https://github.com/jasmine/jasmine/issues/414
 // https://github.com/juliemr/minijasminenode/issues/20
-export function init(opts) {
+function init(opts) {
   refs = getSpecReferences();
   shouldAddMessage = opts.addMessage;
   const tagRegex = new RegExp(opts.tag);
@@ -16,7 +16,6 @@ export function init(opts) {
   return {
     specDone(result) {
       if (opts.name === result.description) {
-        console.log("RESULT DONE", result.description, result.status);
         if (result.status === "failed") {
           disableSpecs(refs);
         }
@@ -30,7 +29,7 @@ export function init(opts) {
  *
  * @return {Object} An object with `specs` and `suites` properties, arrays of respective types.
  */
-export function getSpecReferences() {
+function getSpecReferences() {
   let specs = [];
   let suites = [];
 
@@ -61,7 +60,7 @@ export function getSpecReferences() {
  * remove references to all before/after functions, else they'll still run. Disabling the
  * suites themselves does not appear to have an effect.
  */
-export function disableSpecs() {
+function disableSpecs() {
   if (!refs) {
     throw new Error(
       "jasmine-fail-fast: Must call init() before calling disableSpecs()!"
@@ -80,3 +79,5 @@ export function disableSpecs() {
     suite.afterAllFns = [];
   });
 }
+
+module.exports = { init };

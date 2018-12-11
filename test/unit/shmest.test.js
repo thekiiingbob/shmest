@@ -9,8 +9,8 @@ beforeEach(() => {
   jTest = test;
   jDescribe = describe;
 
-  global.test = (name, testFn) => {
-    const result = testFn();
+  global.test = async (name, testFn) => {
+    const result = await testFn();
     return { name, result };
   };
 
@@ -62,10 +62,12 @@ describe("shmest.test", () => {
     expect(res.result).toBe(12345);
   });
 
-  test("can call test", () => {
-    const res = shmest.test({ name: "my test" }, () => {
+  test.only("can call test", async () => {
+    const res = await shmest.test({ name: "my test" }, async () => {
       return 12345;
     });
+
+    console.log("RES", res);
 
     expect(res.name).toBe("my test");
     expect(res.result).toBe(12345);
@@ -112,16 +114,5 @@ describe("shmest.describe", () => {
     });
 
     expect(res).toBe("only");
-  });
-
-  test("describe will call nested tests", () => {
-    const res = shmest.describe({ name: "my test" }, () => {
-      return shmest.test({ name: "nested test" }, () => {
-        return 12345;
-      });
-    });
-
-    expect(res.result.name).toBe("nested test");
-    expect(res.result.result).toBe(12345);
   });
 });

@@ -1,9 +1,11 @@
-let myResult, myId;
+let myResults, myArgs;
 
-shmest.addCaseReporter(async (result, id) => {
-  console.log("CASE ID IS", id);
-  myResult = result;
-  myId = id;
+shmest.addExternalReporter({
+  onTestResult: (results, args) => {
+    console.log("CASE ID IS", args.caseId);
+    myResults = results;
+    myArgs = args;
+  }
 });
 
 shmest.describe("reporter", () => {
@@ -13,8 +15,8 @@ shmest.describe("reporter", () => {
 
   // this test verifies the output of the previous ones
   shmest.test("result and id is correct", () => {
-    expect(myResult.description).toBe("pass 1");
-    expect(myResult.status).toBe("passed");
-    expect(myId).toBe("foo");
+    expect(myResults.passed).toBe(true);
+    expect(myArgs.caseId).toBe("foo");
+    expect(myArgs.name).toBe("pass 1");
   });
 });

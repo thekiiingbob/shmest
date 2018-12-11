@@ -1,71 +1,64 @@
-const jest = require("jest");
-
-function runHook(jestFn, testFn) {
-  // Run the jestFn with an empty test if we are doing a dry run
-  if (process.env.SHMEST_DRY_RUN === "true") {
-    return jestFn(() => {});
-  }
-
-  return jestFn(testFn);
-}
+const runDescribe = require("./runDescribe");
+const runTest = require("./runTest");
+const runHook = require("./runHook");
+const runShmest = require("./runShmest");
 
 function shmest() {
-  this.addCaseReporter = caseReporterFn => {
-    this.caseReporter = caseReporterFn;
+  this.externalReporter = { onTestResult: () => {} };
+
+  this.addExternalReporter = async externalReporter => {
+    this.externalReporter = externalReporter;
   };
+  // this.addRunReporter = async runReporter => {
+  //   if (process.env.SHMEST_DRY_RUN != "true") {
+  //     console.log("Adding run reporter.");
+  //     this.runReporter = runReporter;
+  //     console.log("this.runReporter", this.runReporter);
+  //   } else {
+  //     console.log("Dry run - Not adding reporter.");
+  //   }
+  // };
 
-  this._runTest = (jestFn, args, testFn) => {
-    const name = typeof args === "string" ? args : args.name;
-
-    // Run the jestFn with an empty test if we are doing a dry run
-    if (process.env.SHMEST_DRY_RUN === "true") {
-      return jestFn(name, () => {});
-    }
-
-    // if we have a caseId, we know we want to write to an external reporter
-    if (args.caseId) {
-      console.log("Adding reporter to send results to test rail");
-      const caseReporter = require("./caseReporter.js");
-      jasmine.getEnv().addReporter(caseReporter.init(args, this.caseReporter));
-    }
-
-    // if a test is marked as important, we will make the following tests after pending
-    if (args.important === true) {
-      console.log("Adding custom reporter to jasmine");
-      // This seems horrible, each test that is marked important gets it's own reporter
-      // Only if the test name matches the reporter it was registered to, will it skip.
-      const importantReporter = require("./importantReporter.js");
-      jasmine.getEnv().addReporter(importantReporter.init(args));
-    }
-
-    return jestFn(name, testFn);
-  };
+  // this.registerRun = runId => {
+  //   console.log("REGISTERING RUN WITH RUNID", runId);
+  //   this.runId = runId;
+  // };
 
   this.test = (args, testFn, opts = {}) => {
-    return this._runTest(test, args, testFn);
+    return runTest(test, args, testFn, {
+      externalReporter: this.externalReporter
+    });
+  };
+
+  this.test.failing = (args, testFn, opts = {}) => {
+    return runTest(test, args, testFn, {
+      externalReporter: this.externalReporter,
+      failing: true
+    });
   };
 
   this.test.skip = (args, testFn, opts = {}) => {
-    return this._runTest(test.skip, args, testFn);
+    return runTest(test.skip, args, testFn, {
+      externalReporter: this.externalReporter
+    });
   };
 
   this.test.only = (args, testFn, opts = {}) => {
-    return this._runTest(test.only, args, testFn);
+    return runTest(test.only, args, testFn, {
+      externalReporter: this.externalReporter
+    });
   };
 
   this.describe = (args, testFn, opts = {}) => {
-    const name = typeof args === "string" ? args : args.name;
-    return describe(name, testFn);
+    return runDescribe(describe, args, testFn);
   };
 
   this.describe.skip = (args, testFn, opts = {}) => {
-    const name = typeof args === "string" ? args : args.name;
-    return describe.skip(name, testFn);
+    return runDescribe(describe.skip, args, testFn);
   };
 
   this.describe.only = (args, testFn, opts = {}) => {
-    const name = typeof args === "string" ? args : args.name;
-    return describe.only(name, testFn);
+    return runDescribe(describe.only, args, testFn);
   };
 
   this.beforeEach = (testFn, opts = {}) => {
@@ -84,15 +77,8 @@ function shmest() {
     return runHook(afterAll, testFn);
   };
 
-  this.run = async argv => {
-    if (process.env.SHMEST_DRY_RUN) {
-      console.log("Dry Run - Not Running Tests");
-    }
-
-    console.log("ARGV:", process.argv);
-    await jest
-      .run(process.argv)
-      .catch(e => console.log("ERROR RUNNING TESTS: ", e));
+  this.run = async () => {
+    await runShmest();
   };
 }
 
